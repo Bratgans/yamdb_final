@@ -31,10 +31,9 @@ class UserCreateSerializer(serializers.Serializer):
         email = validated_data.get('email')
         try:
             user = User.objects.get(email=email)
-            return user
         except Exception:
             raise serializers.ValidationError({'email': ['invalid email']})
-
+        return user
 
 
 class GenreSerializer(serializers.ModelSerializer):
