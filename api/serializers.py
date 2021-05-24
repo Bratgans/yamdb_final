@@ -23,17 +23,9 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
 
 
-class UserCreateSerializer(serializers.Serializer):
+class UserConfirmSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
     confirmation_code = serializers.CharField(required=True)
-
-    def create(self, validated_data):
-        email = validated_data.get('email')
-        try:
-            user = User.objects.get(email=email)
-        except Exception:
-            raise serializers.ValidationError({'email': ['invalid email']})
-        return user
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -62,16 +54,16 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only_fields = ('author',)
         model = Review
 
-    def validate(self, data):
+    def validate(self, attrs):
         request = self.context.get('request')
         if request.method != 'POST':
-            return data
+            return attrs
         user = request.user
         my_view = self.context['view']
         title_id = my_view.kwargs['title_id']
         if Review.objects.filter(title=title_id, author=user).exists():
             raise serializers.ValidationError(REVIEW_EXIST)
-        return data
+        return attrs
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -115,16 +107,3 @@ class ProfileViewSetSerializer(serializers.ModelSerializer):
             'bio',
             'first_name',
             'last_name')
-
-
-class ProfileUserSerializer(serializers.ModelSerializer):
-    bio = serializers.CharField()
-
-    class Meta:
-        model = User
-        fields = ('username',
-                  'email',
-                  'bio',
-                  'first_name',
-                  'last_name',
-                  'role')

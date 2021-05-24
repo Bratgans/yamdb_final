@@ -3,7 +3,7 @@ from django.core.mail import send_mail
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, mixins, serializers, status, viewsets
+from rest_framework import filters, mixins, status, serializers, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import SAFE_METHODS, AllowAny, IsAuthenticated
@@ -17,10 +17,10 @@ from .filters import TitleFilter
 from .models import Category, Genre, Review, Title, User
 from .permissions import IsAdmin, IsAuthor, IsModerator, IsReadOnly
 from .serializers import (CategorySerializer, CommentSerializer,
-                          GenreSerializer, ProfileUserSerializer,
+                          GenreSerializer, UserConfirmSerializer,
                           ProfileViewSetSerializer, ReviewSerializer,
                           TitleListSerializer, TitleSerializer,
-                          TokenSerializer, UserCreateSerializer)
+                          TokenSerializer)
 
 
 def get_tokens_for_user(user):
@@ -49,7 +49,7 @@ class CategoryViewSet(CLDViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [IsReadOnly | IsModerator | IsAuthor]
+    permission_classes = [IsReadOnly | IsAdmin | IsModerator | IsAuthor]
 
     def get_queryset(self):
         review = get_object_or_404(
@@ -79,31 +79,34 @@ class GenreViewSet(CLDViewSet):
 
 
 class TokenCreate(APIView):
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         serializer = TokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        email = serializer.data['email']
         obj, _ = User.objects.get_or_create(
-            email=request.data['email'], username=request.data['username']
+            email=email,
+            username=serializer.data['email']
         )
         token = default_token_generator.make_token(obj)
-        email = request.data['email']
         subject = 'registration'
         message = f'Для активации аккаунта воспользайтесь токеном: {token}'
         send_mail(subject, message, settings.EMAIL_HOST_USER, [email])
 
-        return Response({'success': 'check you email'})
+        return Response({'success': 'check you email'},
+                        status=status.HTTP_201_CREATED)
 
 
-class UserCreate(APIView):
-    permission_classes = (AllowAny, )
+class UserConfirm(APIView):
+    permission_classes = (AllowAny,)
 
     def post(self, request):
-        serializer = UserCreateSerializer(data=request.data)
+        serializer = UserConfirmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        confirmation_code = serializer.validated_data.get('confirmation_code')
+        email = serializer.data['email']
+        user = get_object_or_404(User, email=email)
+        confirmation_code = serializer.data['confirmation_code']
         if not default_token_generator.check_token(user, confirmation_code):
             raise serializers.ValidationError(
                 {'confirmation_code': ['invalid confirmation_code']})
@@ -113,7 +116,7 @@ class UserCreate(APIView):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = [IsReadOnly | IsModerator | IsAuthor]
+    permission_classes = [IsReadOnly | IsAdmin | IsModerator | IsAuthor]
 
     def get_queryset(self):
         title = get_object_or_404(Title, id=self.kwargs['title_id'])
@@ -140,41 +143,22 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    permission_classes = (IsAuthenticated, IsAdmin, )
+    permission_classes = (IsAdmin,)
     serializer_class = ProfileViewSetSerializer
     pagination_class = PageNumberPagination
     filter_backends = [filters.SearchFilter]
-    search_fields = ('email', )
+    search_fields = ('email',)
     lookup_field = 'username'
 
-    @action(detail=False, methods=['GET', 'PATCH'], permission_classes=[
-        IsAuthenticated,
-    ])
-    def me(self, request, username=None):
-        post = get_object_or_404(User, email=request.user)
-        serializer = ProfileUserSerializer(
-            post, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors,
-                            status=status.HTTP_403_FORBIDDEN)
-
-
-class UserProfileDetail(APIView):
-    permission_classes = (IsAuthenticated, )
-
-    def get(self, request):
-        user = get_object_or_404(User, email=request.user)
-        serializer = ProfileUserSerializer(user)
-        return Response(serializer.data)
-
-    def patch(self, request):
-        post = get_object_or_404(User, email=request.user)
-        serializer = ProfileUserSerializer(
-            post, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(status=status.HTTP_403_FORBIDDEN)
+    @action(detail=False,
+            methods=['GET', 'PATCH'],
+            permission_classes=[IsAuthenticated, ]
+            )
+    def me(self, request):
+        user = self.request.user
+        serializer = self.get_serializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        if request.method == 'GET':
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer.save(role=request.user.role, partial=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

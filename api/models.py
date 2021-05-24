@@ -1,17 +1,17 @@
 from datetime import datetime
-
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 
-class User(AbstractUser):
-    class RoleUser(models.TextChoices):
-        USER = 'user'
-        MODERATOR = 'moderator'
-        ADMIN = 'admin'
+class RoleUser(models.TextChoices):
+    USER = 'user'
+    MODERATOR = 'moderator'
+    ADMIN = 'admin'
 
+
+class User(AbstractUser):
     bio = models.TextField(max_length=500, blank=True)
     email = models.EmailField(_('email address'), unique=True)
     role = models.CharField(
@@ -20,19 +20,23 @@ class User(AbstractUser):
         default=RoleUser.USER
     )
 
-    def __str__(self):
-        return self.email
-
     class Meta:
-        ordering = ('username',)
+        ordering = ('pk',)
+
+    def __str__(self):
+        return self.username
 
     @property
     def is_admin(self):
-        return bool(self.role == self.RoleUser.ADMIN)
+        return (
+            self.role == RoleUser.ADMIN
+            or self.is_superuser
+            or self.is_staff
+        )
 
     @property
     def is_moderator(self):
-        return bool(self.role == self.RoleUser.MODERATOR)
+        return self.role == RoleUser.MODERATOR
 
 
 class Genre(models.Model):
@@ -85,7 +89,7 @@ class Title(models.Model):
         verbose_name='Год выпуска',
         validators=[
             MaxValueValidator(datetime.now().year),
-            MinValueValidator(900)
+            MinValueValidator(0)
         ]
     )
     category = models.ForeignKey(

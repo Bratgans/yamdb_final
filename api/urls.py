@@ -1,12 +1,20 @@
-from django.urls import include, path
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
-from api.views import (CategoryViewSet, CommentViewSet, GenreViewSet,
-                       ReviewViewSet, TitleViewSet, TokenCreate, UserCreate,
-                       UserViewSet)
+
+from api.views import (
+    UserViewSet,
+    CategoryViewSet,
+    CommentViewSet,
+    GenreViewSet,
+    ReviewViewSet,
+    TitleViewSet,
+    TokenCreate,
+    UserConfirm,
+)
 
 router = DefaultRouter()
-router.register(r'users', UserViewSet, 'users')
+router.register(r'users', UserViewSet)
 router.register(r'titles', TitleViewSet)
 router.register(r'genres', GenreViewSet)
 router.register(r'categories', CategoryViewSet)
@@ -21,7 +29,7 @@ router.register(
 
 auth_urls = [
     path('email/', TokenCreate.as_view()),
-    path('token/', UserCreate.as_view(), name='get_jwt_token'),
+    path('token/', UserConfirm.as_view(), name='get_jwt_token'),
 ]
 
 urlpatterns = [
