@@ -15,8 +15,10 @@ from api_yamdb import settings
 from .filters import TitleFilter
 from .models import Category, Genre, Review, Title, User
 from .permissions import IsAdmin, IsAuthor, IsModerator, IsReadOnly
-from .serializers import (CategorySerializer, CommentSerializer, GenreSerializer, ProfileViewSetSerializer,
-                          ReviewSerializer, TitleListSerializer, TitleSerializer, TokenSerializer,
+from .serializers import (CategorySerializer, CommentSerializer,
+                          GenreSerializer, ProfileViewSetSerializer,
+                          ReviewSerializer, TitleListSerializer,
+                          TitleSerializer, TokenSerializer,
                           UserConfirmSerializer)
 
 
