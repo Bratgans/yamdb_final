@@ -13,9 +13,9 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from datetime import timedelta
-from dotenv import load_dotenv
 
 from django.conf import settings
+from dotenv import load_dotenv
 
 load_dotenv()
 
