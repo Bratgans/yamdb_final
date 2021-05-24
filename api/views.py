@@ -3,24 +3,21 @@ from django.core.mail import send_mail
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, mixins, status, serializers, viewsets
+from rest_framework import filters, mixins, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import SAFE_METHODS, AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from api_yamdb import settings
-
 from .filters import TitleFilter
 from .models import Category, Genre, Review, Title, User
 from .permissions import IsAdmin, IsAuthor, IsModerator, IsReadOnly
-from .serializers import (CategorySerializer, CommentSerializer,
-                          GenreSerializer, UserConfirmSerializer,
-                          ProfileViewSetSerializer, ReviewSerializer,
-                          TitleListSerializer, TitleSerializer,
-                          TokenSerializer)
+from .serializers import (CategorySerializer, CommentSerializer, GenreSerializer, ProfileViewSetSerializer,
+                          ReviewSerializer, TitleListSerializer, TitleSerializer, TokenSerializer,
+                          UserConfirmSerializer)
 
 
 def get_tokens_for_user(user):
