@@ -57,12 +57,10 @@ jobs:
           passphrase: ${{ secrets.PASSPHRASE }}
           stack_file_name: docker-compose.yaml
           script: |
-            sudo docker ${{ secrets.DOCKER_USERNAME }}/yamdb_final
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/yamdb_final
             sudo docker-compose stop
             sudo docker-compose rm web
-            # Создаст файл для переменных окружения
             touch .env
-            # Наполнит файл переменными окружения из секретов GitHub
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
             echo DB_NAME=${{ secrets.DB_NAME }} >> .env
             echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
@@ -70,10 +68,10 @@ jobs:
             echo DB_HOST=${{ secrets.DB_HOST }} >> .env
             echo DB_PORT=${{ secrets.DB_PORT }} >> .env
             sudo docker-compose up -d
-            sudo docker cp ./static $(sudo docker ps -f name=web --quiet):/yamdb
             sudo docker-compose exec -T web python manage.py makemigrations api
             sudo docker-compose exec -T web python manage.py migrate --no-input
             sudo docker-compose exec -T web python manage.py loaddata fixtures.json
+            sudo docker-compose exec -T web python manage.py collectstatic --no-input
 
   send_message:
     runs-on: ubuntu-latest
