@@ -83,12 +83,12 @@ WSGI_APPLICATION = 'api_yamdb.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('DB_ENGINE'),
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': os.environ.get('DB_PORT'),
+        'ENGINE': os.environ.get('DB_ENGINE') or 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME') or 'postgres',
+        'USER': os.environ.get('POSTGRES_USER') or 'postgres',
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD') or 'postgres',
+        'HOST': os.environ.get('DB_HOST') or 'db',
+        'PORT': os.environ.get('DB_PORT') or '5432',
     }
 }
 
