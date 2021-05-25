@@ -66,7 +66,8 @@ jobs:
           stack_file_name: docker-compose.yaml
           script: |
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/yamdb_final
-            sudo docker-compose stop
+            sudo docker-compose down -v
+            sudo docker image prune -af
             sudo docker-compose rm web
             touch .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
