@@ -1,6 +1,6 @@
 #yamdb_final
 ##Финальный проект по инфраструктуре бэкенд-разработки Яндекс-Практикума
-http://www.bratgans.ga/api/v1
+http://84.252.141.9:8000/api/v1/
 
 Бейдж, показывающий статус workflow:
 https://github.com/Bratgans/yamdb_final/actions/workflows/yamdb_workflow.yml/badge.svg
