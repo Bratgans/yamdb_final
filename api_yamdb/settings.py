@@ -30,10 +30,10 @@ SECRET_KEY = 'p&l%385148kslhtyn^##a1)ilz@4zqj=rq&agdol^##zgl9(vs'
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    "84.252.141.9:8000",
+    "84.252.141.9",
     "localhost",
-    "bratgans.ga:8000",
-    "www.bratgans.ga:8000",
+    "bratgans.ga",
+    "www.bratgans.ga",
 ]
 
 
