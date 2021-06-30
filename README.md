@@ -1,4 +1,4 @@
-[![yamdb_final Actions Status](https://github.com/Bratgans/yamdb_final/workflows/yamdb_final/badge.svg)](https://github.com/Bratgans/yamdb_final/actions)
+[![YaMDB workflow Actions Status](https://github.com/Bratgans/yamdb_final/workflows/yamdb_final/badge.svg)](https://github.com/Bratgans/yamdb_final/actions)
 # yamdb_final
 ## Финальный проект по инфраструктуре бэкенд-разработки Яндекс-Практикума
 http://84.252.141.9/api/v1/
