@@ -1,10 +1,6 @@
 [![YaMDB workflow Actions Status](https://github.com/Bratgans/yamdb_final/workflows/yamdb_final/badge.svg)](https://github.com/Bratgans/yamdb_final/actions)
 # yamdb_final
 ## Финальный проект по инфраструктуре бэкенд-разработки Яндекс-Практикума
-http://84.252.141.9/api/v1/
-
-Бейдж, показывающий статус workflow:
-https://github.com/Bratgans/yamdb_final/actions/workflows/yamdb_workflow.yml/badge.svg
 
 ## Описание проекта
 Проект базы данных художественных произведений (кино, музыка, книги), с возможностью рецензирования и проставления оценок.
